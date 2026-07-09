@@ -1,6 +1,9 @@
-import { Star, MapPin, Clock, UtensilsCrossed, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Star, MapPin, Clock, UtensilsCrossed, ShoppingBag, ArrowRight, ExternalLink } from 'lucide-react';
+import { useCart } from '../lib/cart';
 
 export default function Hero() {
+  const { open: openCart, count } = useCart();
+
   return (
     <section id="top" className="relative min-h-screen flex items-center overflow-hidden pt-28 pb-16">
       {/* Background layers */}
@@ -45,20 +48,20 @@ export default function Hero() {
 
           {/* CTAs */}
           <div id="order" className="mt-9 flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={openCart}
+              className="group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full bg-gold-400 text-ink-950 font-bold hover:bg-gold-300 transition-all shadow-xl shadow-gold-500/30 hover:scale-[1.02]"
+            >
+              {count > 0 ? `View cart (${count})` : 'Place an order'}
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </button>
             <a
               href="https://www.foodpanda.pk"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full bg-gold-400 text-ink-950 font-bold hover:bg-gold-300 transition-all shadow-xl shadow-gold-500/30 hover:scale-[1.02]"
-            >
-              Place an order
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </a>
-            <a
-              href="#menu"
               className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full border border-white/15 text-white font-semibold hover:border-gold-400/50 hover:bg-white/5 transition-colors"
             >
-              View Menu
+              Order on foodpanda <ExternalLink className="w-4 h-4" />
             </a>
           </div>
 

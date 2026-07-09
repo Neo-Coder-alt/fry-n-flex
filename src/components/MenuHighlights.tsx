@@ -1,5 +1,7 @@
-import { Flame, Plus } from 'lucide-react';
+import { Flame, Plus, Check } from 'lucide-react';
+import { useState } from 'react';
 import { menuItems, type MenuItem } from '../data/menu';
+import { useCart } from '../lib/cart';
 
 const badgeStyles: Record<NonNullable<MenuItem['badge']>, string> = {
   spicy: 'bg-red-500/15 text-red-300 border-red-400/30',
@@ -14,6 +16,15 @@ const badgeLabel: Record<NonNullable<MenuItem['badge']>, string> = {
 };
 
 export default function MenuHighlights() {
+  const { add } = useCart();
+  const [added, setAdded] = useState<string | null>(null);
+
+  function handleAdd(item: MenuItem) {
+    add(item);
+    setAdded(item.id);
+    setTimeout(() => setAdded((cur) => (cur === item.id ? null : cur)), 1200);
+  }
+
   return (
     <section id="menu" className="relative py-24 sm:py-32 bg-ink-900/40">
       <div className="absolute inset-0 bg-grid opacity-30" />
@@ -29,10 +40,12 @@ export default function MenuHighlights() {
             </p>
           </div>
           <a
-            href="#order"
+            href="https://www.foodpanda.pk"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gold-400/30 text-gold-300 font-semibold text-sm hover:bg-gold-400/10 transition-colors self-start"
           >
-            See full menu <Flame className="w-4 h-4" />
+            Order on foodpanda <Flame className="w-4 h-4" />
           </a>
         </div>
 
@@ -69,8 +82,17 @@ export default function MenuHighlights() {
                   <span className="shrink-0 font-display text-lg text-gold-300">PKR {item.price}</span>
                 </div>
                 <p className="mt-2.5 text-sm text-white/55 leading-relaxed">{item.description}</p>
-                <button className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-300 hover:text-gold-200 transition-colors">
-                  <Plus className="w-4 h-4" /> Add to order
+                <button
+                  onClick={() => handleAdd(item)}
+                  className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors ${
+                    added === item.id ? 'text-emerald-300' : 'text-gold-300 hover:text-gold-200'
+                  }`}
+                >
+                  {added === item.id ? (
+                    <><Check className="w-4 h-4" /> Added to cart</>
+                  ) : (
+                    <><Plus className="w-4 h-4" /> Add to order</>
+                  )}
                 </button>
               </div>
             </article>

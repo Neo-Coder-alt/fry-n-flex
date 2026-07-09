@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Flame, Menu, X } from 'lucide-react';
+import { Flame, Menu, X, ShoppingBag } from 'lucide-react';
+import { useCart } from '../lib/cart';
 
 const links = [
   { label: 'Overview', href: '#overview' },
@@ -12,6 +13,7 @@ const links = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { count, open: openCart } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -53,12 +55,19 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-3">
-          <a
-            href="#order"
-            className="hidden sm:inline-flex items-center px-5 py-2.5 rounded-full bg-gold-400 text-ink-950 font-semibold text-sm hover:bg-gold-300 transition-colors shadow-lg shadow-gold-500/25"
+          <button
+            onClick={openCart}
+            className="relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-gold-400 text-ink-950 font-semibold text-sm hover:bg-gold-300 transition-colors shadow-lg shadow-gold-500/25"
+            aria-label={`Open cart, ${count} items`}
           >
-            Order Now
-          </a>
+            <ShoppingBag className="w-4 h-4" />
+            <span className="hidden sm:inline">Cart</span>
+            {count > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 grid place-items-center min-w-[20px] h-5 px-1 rounded-full bg-ink-950 text-gold-300 text-xs font-bold border border-gold-400/50">
+                {count}
+              </span>
+            )}
+          </button>
           <button
             onClick={() => setOpen((v) => !v)}
             className="md:hidden grid place-items-center w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
@@ -87,13 +96,12 @@ export default function Navbar() {
             </li>
           ))}
           <li>
-            <a
-              href="#order"
-              onClick={() => setOpen(false)}
-              className="block text-center mt-2 px-4 py-3 rounded-lg bg-gold-400 text-ink-950 font-semibold"
+            <button
+              onClick={() => { setOpen(false); openCart(); }}
+              className="block w-full text-center mt-2 px-4 py-3 rounded-lg bg-gold-400 text-ink-950 font-semibold"
             >
-              Order Now
-            </a>
+              View Cart {count > 0 && `(${count})`}
+            </button>
           </li>
         </ul>
       </div>

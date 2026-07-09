@@ -221,8 +221,9 @@ export default function Reviews() {
                   </p>
                 )}
                 {submitState === 'error' && (
-                  <p className="flex items-center gap-2 text-sm text-red-300">
-                    <AlertCircle className="w-4 h-4" /> Something went wrong. Try again.
+                  <p className="flex items-start gap-2 text-sm text-red-300">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>Couldn't post your review. Please check your connection and try again.</span>
                   </p>
                 )}
               </div>
