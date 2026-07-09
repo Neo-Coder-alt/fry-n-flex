@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ink-950 text-white font-sans antialiased;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: #ffc700;
+  color: #0a0a0a;
+}
+
+.font-display {
+  letter-spacing: 0.02em;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(110deg, #ffd63d 0%, #ffc700 40%, #d99c00 75%, #ffd63d 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3.5s linear infinite;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 199, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 199, 0, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+.card-glow {
+  box-shadow: 0 0 0 1px rgba(255, 199, 0, 0.12), 0 20px 60px -20px rgba(245, 184, 0, 0.25);
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 0 1px rgba(255, 199, 0, 0.3), 0 28px 70px -18px rgba(245, 184, 0, 0.45);
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
