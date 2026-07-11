@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { fetchMenuItems } from '../data/menu';
 import type { MenuItem } from '../lib/supabase';
 import { useCart } from '../lib/cart';
+import { Reveal } from '../lib/hooks';
 
 const badgeStyles: Record<string, string> = {
   spicy: 'bg-red-500/15 text-red-300 border-red-400/30',
@@ -39,25 +40,27 @@ export default function MenuHighlights() {
     <section id="menu" className="relative py-24 sm:py-32 bg-ink-900/40">
       <div className="absolute inset-0 bg-grid opacity-30" />
       <div className="relative max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
-          <div>
-            <p className="text-gold-400 font-semibold text-sm uppercase tracking-widest">Menu</p>
-            <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
-              Menu <span className="text-gradient-gold">highlights</span>
-            </h2>
-            <p className="mt-4 text-white/60 max-w-md">
-              A taste of what's firing on the grill. Tap any dish to build your order.
-            </p>
+        <Reveal>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+            <div>
+              <p className="text-gold-400 font-semibold text-sm uppercase tracking-widest">Menu</p>
+              <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
+                Menu <span className="text-gradient-gold">highlights</span>
+              </h2>
+              <p className="mt-4 text-white/60 max-w-md">
+                A taste of what's firing on the grill. Tap any dish to build your order.
+              </p>
+            </div>
+            <a
+              href="https://www.foodpanda.pk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gold-400/30 text-gold-300 font-semibold text-sm hover:bg-gold-400/10 transition-all hover:scale-105 active:scale-95 self-start"
+            >
+              Order on foodpanda <Flame className="w-4 h-4 transition-transform group-hover:rotate-12" />
+            </a>
           </div>
-          <a
-            href="https://www.foodpanda.pk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gold-400/30 text-gold-300 font-semibold text-sm hover:bg-gold-400/10 transition-colors self-start"
-          >
-            Order on foodpanda <Flame className="w-4 h-4" />
-          </a>
-        </div>
+        </Reveal>
 
         {loading ? (
           <div className="grid place-items-center py-20">
@@ -66,51 +69,51 @@ export default function MenuHighlights() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item, i) => (
-              <article
-                key={item.id}
-                className="group relative rounded-3xl bg-ink-900 border border-white/10 overflow-hidden card-glow transition-all duration-500 hover:-translate-y-1.5 animate-fade-up"
-                style={{ animationDelay: `${i * 0.08}s` }}
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/30 to-transparent" />
-                  {item.badge && badgeStyles[item.badge] && (
-                    <span className={`absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm ${badgeStyles[item.badge]}`}>
-                      {badgeLabel[item.badge]}
-                    </span>
-                  )}
-                  {item.tag && (
-                    <span className="absolute bottom-4 left-4 inline-flex items-center px-3 py-1 rounded-full bg-gold-400 text-ink-950 text-xs font-bold">
-                      {item.tag}
-                    </span>
-                  )}
-                </div>
-
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-display text-xl leading-tight">{item.name}</h3>
-                    <span className="shrink-0 font-display text-lg text-gold-300">PKR {item.price}</span>
-                  </div>
-                  <p className="mt-2.5 text-sm text-white/55 leading-relaxed">{item.description}</p>
-                  <button
-                    onClick={() => handleAdd(item)}
-                    className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors ${
-                      added === item.id ? 'text-emerald-300' : 'text-gold-300 hover:text-gold-200'
-                    }`}
-                  >
-                    {added === item.id ? (
-                      <><Check className="w-4 h-4" /> Added to cart</>
-                    ) : (
-                      <><Plus className="w-4 h-4" /> Add to order</>
+              <Reveal key={item.id} delay={i * 80} threshold={0.1}>
+                <article
+                  className="group relative rounded-3xl bg-ink-900 border border-white/10 overflow-hidden card-glow transition-all duration-500 hover:-translate-y-2 hover:border-gold-400/30 shine-on-hover"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/30 to-transparent" />
+                    {item.badge && badgeStyles[item.badge] && (
+                      <span className={`absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm transition-transform group-hover:scale-110 ${badgeStyles[item.badge]}`}>
+                        {badgeLabel[item.badge]}
+                      </span>
                     )}
-                  </button>
-                </div>
-              </article>
+                    {item.tag && (
+                      <span className="absolute bottom-4 left-4 inline-flex items-center px-3 py-1 rounded-full bg-gold-400 text-ink-950 text-xs font-bold transition-transform group-hover:scale-105">
+                        {item.tag}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-display text-xl leading-tight transition-colors group-hover:text-gold-300">{item.name}</h3>
+                      <span className="shrink-0 font-display text-lg text-gold-300 transition-transform group-hover:scale-110">PKR {item.price}</span>
+                    </div>
+                    <p className="mt-2.5 text-sm text-white/55 leading-relaxed">{item.description}</p>
+                    <button
+                      onClick={() => handleAdd(item)}
+                      className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold transition-all hover:translate-x-1 ${
+                        added === item.id ? 'text-emerald-300' : 'text-gold-300 hover:text-gold-200'
+                      }`}
+                    >
+                      {added === item.id ? (
+                        <><Check className="w-4 h-4 animate-bounce-in" /> Added to cart</>
+                      ) : (
+                        <><Plus className="w-4 h-4" /> Add to order</>
+                      )}
+                    </button>
+                  </div>
+                </article>
+              </Reveal>
             ))}
           </div>
         )}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import Marquee from './components/Marquee';
 import About from './components/About';
 import MenuHighlights from './components/MenuHighlights';
 import Reviews from './components/Reviews';
@@ -56,6 +57,7 @@ export default function App() {
           <Navbar />
           <main>
             <Hero />
+            <Marquee />
             <About />
             <MenuHighlights />
             <Reviews />

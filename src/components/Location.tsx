@@ -1,4 +1,5 @@
 import { MapPin, Navigation, Clock, Share2, Plus, ExternalLink } from 'lucide-react';
+import { Reveal } from '../lib/hooks';
 
 export default function Location() {
   const mapsQuery = 'Fry+N+Flex+Master+Plaza+Nazimabad+Karachi';
@@ -12,6 +13,7 @@ export default function Location() {
         <div className="grid lg:grid-cols-12 gap-10 items-stretch">
           {/* Info panel */}
           <div className="lg:col-span-5 flex flex-col">
+            <Reveal>
             <p className="text-gold-400 font-semibold text-sm uppercase tracking-widest">Location</p>
             <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
               Find us in <span className="text-gradient-gold">Nazimabad</span>
@@ -20,8 +22,10 @@ export default function Location() {
               We're located at Master Plaza in Block 2, Nazimabad — easy to reach for
               dine-in or a quick takeout pickup.
             </p>
+            </Reveal>
 
             <div className="mt-7 space-y-4">
+              <Reveal delay={100}>
               <div className="flex items-start gap-4">
                 <span className="grid place-items-center w-11 h-11 rounded-xl bg-gold-400/10 text-gold-300 shrink-0">
                   <MapPin className="w-5 h-5" />
@@ -32,7 +36,9 @@ export default function Location() {
                   <p className="mt-1 text-sm text-white/45">Plus Code: W25M+4V Nazimabad, Karachi</p>
                 </div>
               </div>
+              </Reveal>
 
+              <Reveal delay={200}>
               <div className="flex items-start gap-4">
                 <span className="grid place-items-center w-11 h-11 rounded-xl bg-gold-400/10 text-gold-300 shrink-0">
                   <Clock className="w-5 h-5" />
@@ -42,8 +48,10 @@ export default function Location() {
                   <p className="mt-0.5 text-white/85">Closed · <span className="text-gold-300 font-semibold">Opens 5 PM</span></p>
                 </div>
               </div>
+              </Reveal>
             </div>
 
+            <Reveal delay={300}>
             <div className="mt-auto pt-8 flex flex-wrap gap-3">
               <a
                 href={directionsUrl}
@@ -60,11 +68,13 @@ export default function Location() {
                 <Plus className="w-4 h-4" /> Add a label
               </button>
             </div>
+            </Reveal>
           </div>
 
           {/* Map */}
           <div className="lg:col-span-7">
-            <div className="relative h-full min-h-[340px] rounded-3xl overflow-hidden border border-gold-400/20 card-glow group">
+            <Reveal delay={150}>
+            <div className="relative h-full min-h-[340px] rounded-3xl overflow-hidden border border-gold-400/20 card-glow group shine-on-hover">
               <iframe
                 title="Fry N Flex location map"
                 src={embedSrc}
@@ -83,6 +93,7 @@ export default function Location() {
                 Open in Maps <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
+            </Reveal>
           </div>
         </div>
       </div>

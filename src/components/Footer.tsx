@@ -1,10 +1,12 @@
 import { Flame, MapPin, Clock, ArrowUp, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Reveal } from '../lib/hooks';
 
 export default function Footer() {
   return (
     <footer className="relative bg-ink-950 border-t border-gold-400/15 pt-16 pb-8 overflow-hidden">
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-gold-500/8 blur-[120px] pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-5 sm:px-8">
+        <Reveal>
         <div className="grid md:grid-cols-12 gap-10 pb-12 border-b border-white/10">
           {/* Brand */}
           <div className="md:col-span-5">
@@ -71,7 +73,9 @@ export default function Footer() {
             </a>
           </div>
         </div>
+        </Reveal>
 
+        <Reveal delay={100}>
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/40">
             © {new Date().getFullYear()} Fry N Flex. All rights reserved.
@@ -88,6 +92,7 @@ export default function Footer() {
             </a>
           </div>
         </div>
+        </Reveal>
       </div>
     </footer>
   );

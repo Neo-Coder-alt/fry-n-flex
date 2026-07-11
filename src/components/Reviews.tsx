@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Star, PenLine, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { supabase, type Review } from '../lib/supabase';
+import { Reveal } from '../lib/hooks';
 
 const colorMap: Record<string, string> = {
   amber: 'from-gold-400 to-gold-600 text-ink-950',
@@ -111,17 +112,20 @@ export default function Reviews() {
   return (
     <section id="reviews" className="relative py-24 sm:py-32">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="text-gold-400 font-semibold text-sm uppercase tracking-widest">Reviews</p>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
-            What guests are <span className="text-gradient-gold">saying</span>
-          </h2>
-        </div>
+        <Reveal>
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <p className="text-gold-400 font-semibold text-sm uppercase tracking-widest">Reviews</p>
+            <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
+              What guests are <span className="text-gradient-gold">saying</span>
+            </h2>
+          </div>
+        </Reveal>
 
         <div className="grid lg:grid-cols-12 gap-10 items-start">
           {/* Summary + form */}
           <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
-            <div className="rounded-3xl bg-ink-900 border border-white/10 p-7 card-glow">
+            <Reveal delay={100}>
+            <div className="rounded-3xl bg-ink-900 border border-white/10 p-7 card-glow shine-on-hover">
               <div className="flex items-end gap-4">
                 <span className="font-display text-6xl text-gold-300 leading-none">{avg.toFixed(1)}</span>
                 <div className="pb-1">
@@ -148,8 +152,10 @@ export default function Reviews() {
                 })}
               </div>
             </div>
+            </Reveal>
 
             {/* Write a review form */}
+            <Reveal delay={200}>
             <form onSubmit={handleSubmit} className="rounded-3xl bg-ink-900 border border-white/10 p-7">
               <div className="flex items-center gap-2 mb-5">
                 <PenLine className="w-5 h-5 text-gold-400" />
@@ -228,6 +234,7 @@ export default function Reviews() {
                 )}
               </div>
             </form>
+            </Reveal>
           </div>
 
           {/* Review list */}
@@ -246,10 +253,9 @@ export default function Reviews() {
               <p className="text-white/50 text-center py-20">No reviews yet — be the first!</p>
             )}
             {!loading && reviews.map((r, i) => (
+              <Reveal key={r.id} delay={i * 80} threshold={0.1}>
               <article
-                key={r.id}
-                className="rounded-3xl bg-ink-900 border border-white/10 p-6 card-glow animate-fade-up"
-                style={{ animationDelay: `${i * 0.06}s` }}
+                className="rounded-3xl bg-ink-900 border border-white/10 p-6 card-glow hover:border-gold-400/20 hover:-translate-y-1 transition-all duration-300 shine-on-hover"
               >
                 <div className="flex items-start gap-4">
                   <span className={`grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br ${colorMap[r.avatar_color] ?? colorMap.amber} font-display text-lg shrink-0`}>
@@ -267,6 +273,7 @@ export default function Reviews() {
                   </div>
                 </div>
               </article>
+              </Reveal>
             ))}
           </div>
         </div>
