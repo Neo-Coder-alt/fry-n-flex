@@ -76,12 +76,17 @@ export default function Footer() {
           <p className="text-sm text-white/40">
             © {new Date().getFullYear()} Fry N Flex. All rights reserved.
           </p>
-          <a
-            href="#top"
-            className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-gold-300 transition-colors"
-          >
-            Back to top <ArrowUp className="w-4 h-4" />
-          </a>
+          <div className="flex items-center gap-4">
+            <a href="#/admin" className="text-sm text-white/30 hover:text-gold-300 transition-colors">
+              Admin
+            </a>
+            <a
+              href="#top"
+              className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-gold-300 transition-colors"
+            >
+              Back to top <ArrowUp className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

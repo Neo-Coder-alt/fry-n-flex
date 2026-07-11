@@ -1,15 +1,16 @@
-import { Flame, Plus, Check } from 'lucide-react';
-import { useState } from 'react';
-import { menuItems, type MenuItem } from '../data/menu';
+import { Flame, Plus, Check, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { fetchMenuItems } from '../data/menu';
+import type { MenuItem } from '../lib/supabase';
 import { useCart } from '../lib/cart';
 
-const badgeStyles: Record<NonNullable<MenuItem['badge']>, string> = {
+const badgeStyles: Record<string, string> = {
   spicy: 'bg-red-500/15 text-red-300 border-red-400/30',
   new: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30',
   popular: 'bg-gold-400/15 text-gold-300 border-gold-400/30',
 };
 
-const badgeLabel: Record<NonNullable<MenuItem['badge']>, string> = {
+const badgeLabel: Record<string, string> = {
   spicy: 'Spicy',
   new: 'New',
   popular: 'Popular',
@@ -18,6 +19,15 @@ const badgeLabel: Record<NonNullable<MenuItem['badge']>, string> = {
 export default function MenuHighlights() {
   const { add } = useCart();
   const [added, setAdded] = useState<string | null>(null);
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMenuItems().then((data) => {
+      setItems(data);
+      setLoading(false);
+    });
+  }, []);
 
   function handleAdd(item: MenuItem) {
     add(item);
@@ -49,55 +59,61 @@ export default function MenuHighlights() {
           </a>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {menuItems.map((item, i) => (
-            <article
-              key={item.id}
-              className="group relative rounded-3xl bg-ink-900 border border-white/10 overflow-hidden card-glow transition-all duration-500 hover:-translate-y-1.5 animate-fade-up"
-              style={{ animationDelay: `${i * 0.08}s` }}
-            >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/30 to-transparent" />
-                {item.badge && (
-                  <span className={`absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm ${badgeStyles[item.badge]}`}>
-                    {badgeLabel[item.badge]}
-                  </span>
-                )}
-                {item.tag && (
-                  <span className="absolute bottom-4 left-4 inline-flex items-center px-3 py-1 rounded-full bg-gold-400 text-ink-950 text-xs font-bold">
-                    {item.tag}
-                  </span>
-                )}
-              </div>
-
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-display text-xl leading-tight">{item.name}</h3>
-                  <span className="shrink-0 font-display text-lg text-gold-300">PKR {item.price}</span>
-                </div>
-                <p className="mt-2.5 text-sm text-white/55 leading-relaxed">{item.description}</p>
-                <button
-                  onClick={() => handleAdd(item)}
-                  className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors ${
-                    added === item.id ? 'text-emerald-300' : 'text-gold-300 hover:text-gold-200'
-                  }`}
-                >
-                  {added === item.id ? (
-                    <><Check className="w-4 h-4" /> Added to cart</>
-                  ) : (
-                    <><Plus className="w-4 h-4" /> Add to order</>
+        {loading ? (
+          <div className="grid place-items-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-gold-400" />
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((item, i) => (
+              <article
+                key={item.id}
+                className="group relative rounded-3xl bg-ink-900 border border-white/10 overflow-hidden card-glow transition-all duration-500 hover:-translate-y-1.5 animate-fade-up"
+                style={{ animationDelay: `${i * 0.08}s` }}
+              >
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/30 to-transparent" />
+                  {item.badge && badgeStyles[item.badge] && (
+                    <span className={`absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm ${badgeStyles[item.badge]}`}>
+                      {badgeLabel[item.badge]}
+                    </span>
                   )}
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+                  {item.tag && (
+                    <span className="absolute bottom-4 left-4 inline-flex items-center px-3 py-1 rounded-full bg-gold-400 text-ink-950 text-xs font-bold">
+                      {item.tag}
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-display text-xl leading-tight">{item.name}</h3>
+                    <span className="shrink-0 font-display text-lg text-gold-300">PKR {item.price}</span>
+                  </div>
+                  <p className="mt-2.5 text-sm text-white/55 leading-relaxed">{item.description}</p>
+                  <button
+                    onClick={() => handleAdd(item)}
+                    className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors ${
+                      added === item.id ? 'text-emerald-300' : 'text-gold-300 hover:text-gold-200'
+                    }`}
+                  >
+                    {added === item.id ? (
+                      <><Check className="w-4 h-4" /> Added to cart</>
+                    ) : (
+                      <><Plus className="w-4 h-4" /> Add to order</>
+                    )}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
