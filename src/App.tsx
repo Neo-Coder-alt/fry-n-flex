@@ -8,6 +8,7 @@ import Reviews from './components/Reviews';
 import Location from './components/Location';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
+import FireBackground from './components/FireBackground';
 import { CartProvider } from './lib/cart';
 import { AuthProvider, useAuth } from './lib/auth';
 import AdminLogin from './components/admin/AdminLogin';
@@ -53,17 +54,20 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <div id="overview" className="min-h-screen bg-ink-950 text-white">
-          <Navbar />
-          <main>
-            <Hero />
-            <Marquee />
-            <About />
-            <MenuHighlights />
-            <Reviews />
-            <Location />
-          </main>
-          <Footer />
+        <div id="overview" className="min-h-screen bg-ink-950 text-white relative">
+          <FireBackground />
+          <div className="relative z-10">
+            <Navbar />
+            <main>
+              <Hero />
+              <Marquee />
+              <About />
+              <MenuHighlights />
+              <Reviews />
+              <Location />
+            </main>
+            <Footer />
+          </div>
           <CartDrawer />
         </div>
       </CartProvider>

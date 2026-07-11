@@ -136,7 +136,7 @@ export default function Hero() {
             <img
               src="https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=900"
               alt="Fry N Flex signature burger"
-              className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
+              className="w-full h-full object-cover object-center transition-transform duration-[1.2s] group-hover:scale-105"
               loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent" />

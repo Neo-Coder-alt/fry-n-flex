@@ -77,7 +77,7 @@ export default function MenuHighlights() {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+                      className="w-full h-full object-cover object-center transition-transform duration-[1.2s] group-hover:scale-110"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/30 to-transparent" />
