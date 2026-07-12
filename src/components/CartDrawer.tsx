@@ -73,7 +73,7 @@ export default function CartDrawer() {
     let orderId = '';
 
     if (supabase) {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('orders')
         .insert({
           customer_name: name.trim(),
@@ -84,9 +84,8 @@ export default function CartDrawer() {
           delivery_fee: DELIVERY_FEE,
           total,
           status: 'pending',
-        })
-        .select()
-        .single();
+          notes: notes.trim() || null,
+        });
 
       if (error) {
         console.error('[CartDrawer] Order insert failed:', error.message, error);
@@ -94,7 +93,7 @@ export default function CartDrawer() {
         setSubmitting(false);
         return;
       }
-      orderId = (data as { id: string }).id;
+      orderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
     } else {
       orderId = `local-${Date.now()}`;
     }
