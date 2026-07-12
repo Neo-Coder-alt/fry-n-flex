@@ -19,6 +19,7 @@ export default function CartDrawer() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
   const [completed, setCompleted] = useState<CompletedOrder | null>(null);
@@ -40,27 +41,28 @@ export default function CartDrawer() {
 
   const total = subtotal + (subtotal > 0 ? DELIVERY_FEE : 0);
 
-  function buildWhatsAppMessage(orderId: string): string {
-    const lines = [
-      '*New Order — Fry N Flex*',
-      `Order #: ${orderId.slice(0, 8).toUpperCase()}`,
-      '',
-      '*Items:*',
-      ...items.map((i) => `• ${i.name} x${i.qty} — PKR ${i.price * i.qty}`),
-      '',
-      `Subtotal: PKR ${subtotal}`,
-      `Delivery: PKR ${DELIVERY_FEE}`,
-      `*Total: PKR ${total}*`,
-      '',
-      '*Customer:*',
-      `Name: ${name}`,
-      `Phone: ${phone}`,
-      `Address: ${address}`,
-    ];
-    return lines.join('\n');
+  function buildWhatsAppMessage(): string {
+    const orderLines = items.map((i) => `${i.name} x${i.qty} — PKR ${i.price * i.qty}`).join('\n');
+
+    const message =
+      '🍔 New Order\n' +
+      'Customer Name:\n' +
+      `${name}\n` +
+      'Phone:\n' +
+      `${phone}\n` +
+      'Address:\n' +
+      `${address}\n` +
+      'Order:\n' +
+      `${orderLines}\n` +
+      'Total:\n' +
+      `PKR ${total}\n` +
+      'Special Instructions:\n' +
+      `${notes || 'None'}`;
+
+    return message;
   }
 
-  async function handleCheckout(e: React.FormEvent) {
+  async function handlePlaceOrder(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !address.trim()) return;
     setSubmitting(true);
@@ -70,38 +72,37 @@ export default function CartDrawer() {
 
     let orderId = '';
 
-    if (!supabase) {
-      console.error('[CartDrawer] Supabase client is null — env vars may not be loaded.');
-      setOrderError('Database connection failed. Please refresh the page and try again.');
-      setSubmitting(false);
-      return;
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert({
+          customer_name: name.trim(),
+          customer_phone: phone.trim(),
+          customer_address: address.trim(),
+          items: orderItems,
+          subtotal,
+          delivery_fee: DELIVERY_FEE,
+          total,
+          status: 'pending',
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('[CartDrawer] Order insert failed:', error.message, error);
+        setOrderError(error.message || 'Could not save your order. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+      orderId = (data as { id: string }).id;
+    } else {
+      orderId = `local-${Date.now()}`;
     }
 
-    const { data, error } = await supabase
-      .from('orders')
-      .insert({
-        customer_name: name.trim(),
-        customer_phone: phone.trim(),
-        customer_address: address.trim(),
-        items: orderItems,
-        subtotal,
-        delivery_fee: DELIVERY_FEE,
-        total,
-        status: 'pending',
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('[CartDrawer] Order insert failed:', error.message, error);
-      setOrderError(error.message || 'Could not save your order. Please try again.');
-      setSubmitting(false);
-      return;
-    }
-    orderId = (data as { id: string }).id;
-
-    const message = encodeURIComponent(buildWhatsAppMessage(orderId));
+    const message = encodeURIComponent(buildWhatsAppMessage());
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
     setCompleted({ orderId, whatsappUrl, customerName: name.trim(), total });
     setSubmitting(false);
@@ -175,7 +176,7 @@ export default function CartDrawer() {
                 <ul className="px-4 py-4 space-y-3">
                   {items.map((item) => (
                     <li key={item.id} className="flex gap-3 rounded-2xl bg-ink-800 border border-white/8 p-3">
-                      <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover shrink-0" />
+                      <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover object-center shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <h3 className="font-medium text-sm leading-tight pr-1">{item.name}</h3>
@@ -217,7 +218,7 @@ export default function CartDrawer() {
           )}
 
           {stage === 'checkout' && (
-            <form id="checkout-form" onSubmit={handleCheckout} className="px-5 py-5 space-y-4">
+            <form id="checkout-form" onSubmit={handlePlaceOrder} className="px-5 py-5 space-y-4">
               <div>
                 <label className="text-xs uppercase tracking-wider text-white/50 font-semibold">Full name</label>
                 <input
@@ -253,6 +254,17 @@ export default function CartDrawer() {
                   className="mt-1.5 w-full px-4 py-3 rounded-xl bg-ink-800 border border-white/10 text-white placeholder:text-white/30 focus:border-gold-400/50 focus:ring-2 focus:ring-gold-400/20 outline-none transition resize-none"
                 />
               </div>
+              <div>
+                <label className="text-xs uppercase tracking-wider text-white/50 font-semibold">Special instructions</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  maxLength={300}
+                  rows={2}
+                  placeholder="e.g. extra spicy, no onions, call on arrival"
+                  className="mt-1.5 w-full px-4 py-3 rounded-xl bg-ink-800 border border-white/10 text-white placeholder:text-white/30 focus:border-gold-400/50 focus:ring-2 focus:ring-gold-400/20 outline-none transition resize-none"
+                />
+              </div>
               <div className="rounded-2xl bg-ink-800 border border-white/8 p-4 space-y-2 text-sm">
                 <div className="flex justify-between text-white/60">
                   <span>Subtotal</span><span className="tabular-nums">PKR {subtotal}</span>
@@ -267,7 +279,7 @@ export default function CartDrawer() {
               <div className="flex items-start gap-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-3">
                 <MessageCircle className="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" />
                 <p className="text-xs text-emerald-200/90">
-                  Your order will be saved and sent via WhatsApp to the restaurant for instant confirmation. Cash on delivery.
+                  Placing your order opens WhatsApp with your order details pre-filled. Just hit send to confirm. Cash on delivery.
                 </p>
               </div>
               {orderError && (
@@ -284,12 +296,12 @@ export default function CartDrawer() {
               <div className="grid place-items-center w-20 h-20 rounded-full bg-emerald-500/15 text-emerald-300">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h3 className="font-display text-2xl">Order saved!</h3>
+              <h3 className="font-display text-2xl">Order placed!</h3>
               <p className="text-white/60 text-sm max-w-xs">
-                Order <span className="text-gold-300 font-mono">#{completed.orderId.slice(0, 8).toUpperCase()}</span> for PKR {completed.total} is in the system.
+                WhatsApp opened in a new tab with your order details. Just hit send to confirm with the restaurant.
               </p>
               <p className="text-white/50 text-sm max-w-xs">
-                Tap below to send the order details to the restaurant on WhatsApp.
+                Order reference: <span className="text-gold-300 font-mono">#{completed.orderId.slice(0, 8).toUpperCase()}</span> · PKR {completed.total}
               </p>
               <a
                 href={completed.whatsappUrl}
@@ -297,7 +309,7 @@ export default function CartDrawer() {
                 rel="noopener noreferrer"
                 className="mt-2 w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-emerald-500 text-white font-bold hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/25"
               >
-                <MessageCircle className="w-5 h-5" /> Send order on WhatsApp
+                <MessageCircle className="w-5 h-5" /> Re-open WhatsApp
               </a>
               <button
                 onClick={close}
@@ -333,9 +345,9 @@ export default function CartDrawer() {
               className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gold-400 text-ink-950 font-bold hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Saving order…</>
+                <><Loader2 className="w-5 h-5 animate-spin" /> Placing order…</>
               ) : (
-                <>Place order</>
+                <><MessageCircle className="w-5 h-5" /> Place order on WhatsApp</>
               )}
             </button>
           </div>
